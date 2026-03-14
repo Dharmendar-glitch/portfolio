@@ -16,8 +16,8 @@ const Footer = () => {
             className="mb-6 md:mb-0"
           >
             <h3 className="text-xl font-heading font-bold flex items-center gap-2">
-              <span className="text-gradient">SS.</span>
-              <span className="text-white">Studio</span>
+              <span className="text-gradient">Mr Shaheeth</span>
+              <span className="text-white">Editz</span>
             </h3>
             <p className="text-textMain/50 text-sm mt-2">
               © 2026 S. Shaheeth – Creative Video Editor

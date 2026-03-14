@@ -95,9 +95,9 @@ const CommunitySection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="w-full lg:w-1/2 relative hidden md:flex items-center justify-center p-8"
+            className="w-full lg:w-1/2 relative flex items-center justify-center p-8"
           >
-            <div className="w-[350px] h-[450px] relative z-20">
+            <div className="w-full max-w-[350px] aspect-[3/4] md:h-[450px] relative z-20">
               <Stack
                 randomRotation={true}
                 sensitivity={180}

@@ -47,7 +47,7 @@ const Loader = ({ onFinish }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1, duration: 0.8 }}
         >
-          Cinematic Editing
+          Professional Editor
         </motion.p>
       </motion.div>
     </motion.div>

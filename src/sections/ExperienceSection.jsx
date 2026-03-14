@@ -90,7 +90,7 @@ const ExperienceSection = () => {
               </div>
 
               <div className="flex flex-wrap gap-4 mb-6 text-sm text-textMain/50 font-medium">
-                <div className="flex items-center gap-1.5"><Calendar size={16} /> Nov 2023</div>
+                <div className="flex items-center gap-1.5"><Calendar size={16} /> 2025</div>
                 <div className="flex items-center gap-1.5"><MapPin size={16} /> Coimbatore</div>
               </div>
 
