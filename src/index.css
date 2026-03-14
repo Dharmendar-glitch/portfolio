@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-textMain antialiased scroll-smooth selection:bg-primary/30 selection:text-white font-sans;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  /* Prevent layout shift on scrollbar */
+  html { scrollbar-gutter: stable; }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/[0.03] backdrop-blur-lg border border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  }
+  /* Reduce blur on mobile for performance */
+  @media (max-width: 768px) {
+    .glass { @apply backdrop-blur-sm; }
+  }
+  .glass-hover {
+    @apply hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300;
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-secondary;
+  }
+  .animate-blob {
+    animation: blob 7s infinite;
+  }
+  .animation-delay-2000 { animation-delay: 2s; }
+  .animation-delay-4000 { animation-delay: 4s; }
+  .will-change-transform { will-change: transform; }
+}
+
+/* Keyframes */
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -50px) scale(1.1); }
+  66%       { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+@keyframes float-particle {
+  0%   { transform: translateY(0px) translateX(0px); opacity: 0.08; }
+  50%  { transform: translateY(-24px) translateX(8px); opacity: 0.2; }
+  100% { transform: translateY(-6px) translateX(-6px); opacity: 0.08; }
+}
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes text-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-text-shimmer {
+  background-size: 200% auto;
+  animation: text-shimmer 8s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #444; }
+
+/* Touch optimizations for mobile */
+@media (hover: none) {
+  /* Disable heavy hover transitions on touch screens */
+  .group:hover video { transform: none !important; filter: none !important; }
+}
