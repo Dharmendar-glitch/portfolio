@@ -146,45 +146,44 @@ const CardSkeleton = () => (
 );
 
 // ─── Individual Video Card ────────────────────────────────────────────────────
-const VideoCard = ({ project, onOpen, isLarge = false }) => {
+const VideoCard = ({ project, onOpen }) => {
   const videoRef = useRef(null);
   const cardRef = useRef(null);
   const { isMuted: globalMuted } = useContext(AudioContext);
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [skeletonExpired, setSkeletonExpired] = useState(false);
-  const thumbnailUrl = getThumbnail(project.url);
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
-  // ─── Force Skeleton for exactly 1.4s ───
-  useEffect(() => {
-    const timer = setTimeout(() => setSkeletonExpired(true), 1400);
-    return () => clearTimeout(timer);
-  }, []);
+  // Cloudinary: serve compressed WebP thumbnail, 400px wide, auto quality
+  const thumbnailUrl = project.url
+    .replace('/video/upload/', '/video/upload/so_auto,q_auto,f_webp,w_400/')
+    .replace('.mp4', '.webp');
 
-  // ─── Intersection Observer for Mobile Auto-play ───
+  // ─── Intersection Observer: lazy-load video src ONLY when card is visible ───
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        // If it's a touch device, auto-play when in center
+        if (entry.isIntersecting && videoRef.current && !videoRef.current.src) {
+          // Inject src only when in viewport — prevents 12 parallel network requests
+          videoRef.current.src = project.url;
+          setVideoLoaded(true);
+        }
+        // Mobile auto-play when >50% visible
         if (window.matchMedia('(hover: none)').matches) {
           if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
             setIsHovered(true);
-            if (videoRef.current) {
-              videoRef.current.play().catch(() => {});
-            }
+            videoRef.current?.play().catch(() => {});
           } else {
             setIsHovered(false);
-            if (videoRef.current) {
-              videoRef.current.pause();
-            }
+            videoRef.current?.pause();
           }
         }
       });
-    }, { threshold: [0.5] });
+    }, { threshold: [0.1, 0.5], rootMargin: '200px' });
 
     if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
-  }, []);
+  }, [project.url]);
 
   // ─── Sync Audio with Global Toggle ───
   useEffect(() => {
@@ -194,27 +193,27 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
   }, [globalMuted, isHovered]);
 
   const handleMouseEnter = useCallback(() => {
-    if (window.matchMedia('(hover: hover)').matches) {
-      setIsHovered(true);
-      if (videoRef.current) {
-        videoRef.current.currentTime = 0;
-        videoRef.current.muted = globalMuted;
-        videoRef.current.play().catch(() => {
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    setIsHovered(true);
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.muted = globalMuted;
+      videoRef.current.play().catch(() => {
+        if (videoRef.current) {
           videoRef.current.muted = true;
           videoRef.current.play().catch(() => {});
-        });
-      }
+        }
+      });
     }
   }, [globalMuted]);
 
   const handleMouseLeave = useCallback(() => {
-    if (window.matchMedia('(hover: hover)').matches) {
-      setIsHovered(false);
-      if (videoRef.current) {
-        videoRef.current.pause();
-        videoRef.current.muted = true;
-        videoRef.current.currentTime = 0;
-      }
+    if (!window.matchMedia('(hover: hover)').matches) return;
+    setIsHovered(false);
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.muted = true;
+      videoRef.current.currentTime = 0;
     }
   }, []);
 
@@ -228,10 +227,10 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9 }}
       whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-      transition={{ 
-        duration: 0.8, 
+      transition={{
+        duration: 0.8,
         ease: [0.16, 1, 0.3, 1],
-        layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } 
+        layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
       }}
       className={`group relative rounded-[2rem] overflow-hidden cursor-pointer bg-black/40 backdrop-blur-sm border border-white/[0.08]
         hover:border-white/[0.2] transition-all duration-700
@@ -241,29 +240,34 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
       onMouseLeave={handleMouseLeave}
       onClick={() => onOpen(project)}
     >
-      {/* ── Skeleton Layer ── */}
-      <AnimatePresence>
-        {(!imageLoaded || !skeletonExpired) && <CardSkeleton key="skeleton" />}
-      </AnimatePresence>
+      {/* ── Skeleton while thumbnail loads ── */}
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-white/[0.03] animate-pulse overflow-hidden rounded-[2rem]">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.05] to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
+          <div className="absolute top-5 left-5 w-24 h-8 rounded-full bg-white/[0.05]" />
+          <div className="absolute bottom-5 left-5 right-5 h-16 rounded-2xl bg-white/[0.05]" />
+        </div>
+      )}
 
       {/* ── Inner Glow Ring ── */}
       <div className="absolute inset-0 rounded-[2rem] pointer-events-none border border-white/5 group-hover:border-transparent transition-colors z-10" />
 
-      {/* ── Static Thumbnail Preview ── */}
+      {/* ── Static Thumbnail — lazy, WebP, compressed ── */}
       <img
         src={thumbnailUrl}
         alt={project.title}
         loading="lazy"
+        decoding="async"
+        width="400"
         onLoad={() => setImageLoaded(true)}
         className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1s] ease-out will-change-transform
-          ${(imageLoaded && skeletonExpired) ? 'opacity-100' : 'opacity-0'}
+          ${imageLoaded ? 'opacity-100' : 'opacity-0'}
           ${isHovered ? 'scale-[1.05] blur-[10px] opacity-0' : 'scale-100 blur-0'}`}
       />
 
-      {/* ── Video — preload=none for perf, loads on hover ── */}
+      {/* ── Video: NO src attribute — injected lazily by IntersectionObserver ── */}
       <video
         ref={videoRef}
-        src={project.url}
         poster={thumbnailUrl}
         preload="none"
         muted
@@ -288,7 +292,8 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
         className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none mix-blend-screen"
         style={{ boxShadow: `inset 0 0 100px -30px ${col?.glow || 'rgba(124,58,237,0.4)'}` }}
       />
-      {/* ── Dynamic Audio Status Indicator ── */}
+
+      {/* ── Audio Status Indicator ── */}
       <AnimatePresence>
         {isHovered && !globalMuted && (
           <motion.div
@@ -332,7 +337,7 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
         )}
       </AnimatePresence>
 
-      {/* ── Ultra-premium info bar ── */}
+      {/* ── Info bar ── */}
       <div className={`absolute bottom-0 left-0 right-0 z-20 p-5 flex flex-col justify-end transition-all duration-700 pointer-events-none
         ${isHovered ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-70'}`}>
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/50 mb-1">{project.platform}</p>

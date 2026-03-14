@@ -11,5 +11,13 @@ export default defineConfig({
       "motion/react": "framer-motion",
     },
   },
+  build: {
+    chunkSizeWarningLimit: 600,
+    cssCodeSplit: true,
+  },
+  // Optimize dependencies pre-bundling
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'framer-motion'],
+    exclude: [],
+  },
 })
-

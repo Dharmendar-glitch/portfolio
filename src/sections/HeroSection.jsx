@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, lazy, Suspense } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
-import FloatingLines from '../components/FloatingLines';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { ArrowRight } from 'lucide-react';
+
+// FloatingLines uses WebGL (Three.js) — lazy load so it doesn't block FCP
+const FloatingLines = lazy(() => import('../components/FloatingLines'));
 
 const HeroSection = () => {
   const container = useRef();
@@ -11,59 +11,60 @@ const HeroSection = () => {
   const yParallax = useTransform(scrollY, [0, 800], [0, 200]);
   const opacity = useTransform(scrollY, [0, 400], [1, 0]);
 
-  // ─── Pro-Level GSAP Animations ───
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.5 } });
+  // ─── GSAP loaded lazily, only after hero mounts ───────────────────────────
+  React.useEffect(() => {
+    // Use dynamic import so GSAP doesn't block initial render/FCP
+    let cleanup = () => {};
+    const loadGsap = async () => {
+      const { default: gsap } = await import('gsap');
+      const { useGSAP } = await import('@gsap/react');
 
-    tl.from('.hero-badge', {
-      y: 40,
-      opacity: 0,
-      scale: 0.8,
-      duration: 1.2
-    })
-    .from('.hero-title', {
-      y: 100,
-      opacity: 0,
-      skewY: 7,
-      stagger: 0.1,
-      delay: -1
-    })
-    .from('.hero-subtitle', {
-      y: 30,
-      opacity: 0,
-      delay: -1.2
-    })
-    .from('.hero-btn', {
-      y: 30,
-      opacity: 0,
-      stagger: 0.15,
-      delay: -1.3
-    });
-  }, { scope: container });
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.5 } });
+      tl.from('.hero-badge',    { y: 40, opacity: 0, scale: 0.8, duration: 1.2 })
+        .from('.hero-title',    { y: 100, opacity: 0, skewY: 7, stagger: 0.1, delay: -1 })
+        .from('.hero-subtitle', { y: 30, opacity: 0, delay: -1.2 })
+        .from('.hero-btn',      { y: 30, opacity: 0, stagger: 0.15, delay: -1.3 });
+
+      cleanup = () => tl.kill();
+    };
+
+    // Defer GSAP animation until after browser is idle — doesn't block FCP/LCP
+    if (typeof requestIdleCallback !== 'undefined') {
+      const id = requestIdleCallback(() => loadGsap());
+      return () => { cancelIdleCallback(id); cleanup(); };
+    } else {
+      const id = setTimeout(() => loadGsap(), 100);
+      return () => { clearTimeout(id); cleanup(); };
+    }
+  }, []);
 
   return (
-    <section 
-      id="home" 
+    <section
+      id="home"
       ref={container}
       className="relative h-screen flex items-center justify-center p-6 overflow-hidden"
     >
-
-      {/* ── FloatingLines WebGL Background ── */}
+      {/* ── FloatingLines WebGL Background — lazy, won't block FCP ── */}
       <div className="absolute inset-0 z-0">
-        <FloatingLines
-          linesGradient={['#7C3AED', '#06B6D4', '#F43F5E', '#7C3AED']}
-          enabledWaves={['top', 'middle', 'bottom']}
-          lineCount={[10, 8, 6]}
-          lineDistance={[8, 5, 4]}
-          animationSpeed={0.35} // Even slower for maximum "Pro" smoothness
-          interactive={true}
-          bendRadius={5.0}
-          bendStrength={-0.4}
-          mouseDamping={0.03}
-          parallax={true}
-          parallaxStrength={0.1}
-          mixBlendMode="screen"
-        />
+        <Suspense fallback={
+          // Lightweight CSS-only fallback while WebGL loads
+          <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent" />
+        }>
+          <FloatingLines
+            linesGradient={['#7C3AED', '#06B6D4', '#F43F5E', '#7C3AED']}
+            enabledWaves={['top', 'middle', 'bottom']}
+            lineCount={[10, 8, 6]}
+            lineDistance={[8, 5, 4]}
+            animationSpeed={0.35}
+            interactive={true}
+            bendRadius={5.0}
+            bendStrength={-0.4}
+            mouseDamping={0.03}
+            parallax={true}
+            parallaxStrength={0.1}
+            mixBlendMode="screen"
+          />
+        </Suspense>
       </div>
 
       {/* ── Overlays for depth and readability ── */}
@@ -100,7 +101,6 @@ const HeroSection = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
-          {/* Contact (Primary CTA) */}
           <a
             href="#contact"
             className="hero-btn group relative w-full sm:w-auto flex items-center justify-center gap-4 px-12 py-5 rounded-full text-xl font-bold text-background bg-white shadow-[0_20px_50px_rgba(255,255,255,0.15)] hover:shadow-[0_25px_60px_rgba(255,255,255,0.25)] transition-all duration-500 overflow-hidden hover:scale-105 active:scale-95"

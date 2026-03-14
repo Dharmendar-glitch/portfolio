@@ -105,14 +105,21 @@ const CommunitySection = () => {
                 autoplay={true}
                 autoplayDelay={2500}
                 pauseOnHover={true}
-                cards={communityImages.map(({ src, alt }) => (
-                  <img
-                    key={src}
-                    src={src}
-                    alt={alt}
-                    className="w-full h-full object-cover pointer-events-none"
-                  />
-                ))}
+                cards={communityImages.map(({ src, alt }) => {
+                  const optimizedSrc = src.replace('/image/upload/', '/image/upload/w_600,q_auto,f_webp/');
+                  return (
+                    <img
+                      key={src}
+                      src={optimizedSrc}
+                      alt={alt}
+                      loading="lazy"
+                      decoding="async"
+                      width="600"
+                      height="800"
+                      className="w-full h-full object-cover pointer-events-none rounded-2xl"
+                    />
+                  );
+                })}
               />
             </div>
             

@@ -39,8 +39,14 @@ const AboutSection = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10 mix-blend-multiply transition-opacity group-hover:opacity-50 duration-500"></div>
 
               <img
-                src="https://res.cloudinary.com/dlmk17r9h/image/upload/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png"
+                src="https://res.cloudinary.com/dlmk17r9h/image/upload/w_600,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png"
+                srcSet="https://res.cloudinary.com/dlmk17r9h/image/upload/w_300,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png 300w, https://res.cloudinary.com/dlmk17r9h/image/upload/w_600,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png 600w, https://res.cloudinary.com/dlmk17r9h/image/upload/w_900,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png 900w"
+                sizes="(max-width: 640px) 300px, (max-width: 1024px) 450px, 600px"
                 alt="S. Shaheeth"
+                width="600"
+                height="750"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover rounded-[1.5rem] filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-100 group-hover:scale-105"
               />
 
@@ -79,7 +85,7 @@ const AboutSection = () => {
                 { label: "Accounts Managed", value: "20+", icon: <Briefcase /> },
                 { label: "Videos Edited", value: "500+", icon: <Video /> },
                 { label: "Total Views", value: "Millions", icon: <Award /> },
-                { label: "Experience", value: "Since 2025", icon: <MapPin /> },
+                { label: "Experience", value: "Since 2022", icon: <MapPin /> },
               ].map((stat, i) => (
                 <motion.div
                   key={i}

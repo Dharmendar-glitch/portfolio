@@ -3,9 +3,16 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Preconnect to critical origins FIRST for fastest DNS/TLS -->
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png"
     href="https://res.cloudinary.com/dlmk17r9h/image/upload/v1773518486/Screenshot_2026-03-15_012741_cxzbdk.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- Primary Meta Tags -->
   <title>S Shaheeth | Professional Video Editor Portfolio</title>
@@ -21,7 +28,7 @@
   <meta property="og:title" content="S Shaheeth | Professional Video Editor Portfolio" />
   <meta property="og:description"
     content="Portfolio of S Shaheeth – professional video editor specializing in reels, brand ads, and digital storytelling." />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=1200" />
+  <meta property="og:image" content="https://res.cloudinary.com/dlmk17r9h/image/upload/w_1200,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
@@ -29,29 +36,51 @@
   <meta property="twitter:title" content="S Shaheeth | Professional Video Editor Portfolio" />
   <meta property="twitter:description"
     content="Portfolio of S Shaheeth – professional video editor specializing in reels, brand ads, and digital storytelling." />
-  <meta property="twitter:image" content="https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=1200" />
+  <meta property="twitter:image" content="https://res.cloudinary.com/dlmk17r9h/image/upload/w_1200,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png" />
+
+  <!-- Preload hero profile image (LCP element) using Cloudinary auto-format -->
+  <link rel="preload" as="image"
+    href="https://res.cloudinary.com/dlmk17r9h/image/upload/w_600,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png"
+    imageSrcSet="https://res.cloudinary.com/dlmk17r9h/image/upload/w_300,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png 300w, https://res.cloudinary.com/dlmk17r9h/image/upload/w_600,q_auto,f_webp/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png 600w" />
+
+  <!-- Preload Google Fonts (non-render blocking) -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+    onload="this.onload=null;this.rel='stylesheet'" />
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" />
+  </noscript>
+
+  <!-- CRITICAL INLINE CSS: prevents FOUC and ensures instant background render -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background-color: #050505; scrollbar-gutter: stable; }
+    body { background-color: #050505; color: #E5E7EB; -webkit-font-smoothing: antialiased; }
+    #root { min-height: 100vh; }
+  </style>
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "S. Shaheeth",
-        "url": "https://shakeeth.com",
-        "jobTitle": "Professional Video Editor",
-        "description": "Portfolio of S Shaheeth – professional video editor specializing in reels, brand ads, and digital storytelling.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Coimbatore",
-          "addressCountry": "India"
-        },
-        "sameAs": [
-          "https://instagram.com/your_handle",
-          "https://linkedin.com/in/your_handle",
-          "https://youtube.com/your_channel"
-        ]
-      }
-    </script>
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "S. Shaheeth",
+      "url": "https://shakeeth.com",
+      "jobTitle": "Professional Video Editor",
+      "description": "Portfolio of S Shaheeth – professional video editor specializing in reels, brand ads, and digital storytelling.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Coimbatore",
+        "addressCountry": "India"
+      },
+      "sameAs": [
+        "https://www.instagram.com/mr_shaheeth__editzz",
+        "https://www.linkedin.com/in/s-shaheeth-bb8570283",
+        "https://youtube.com/@mr_shaheeth__editzz684"
+      ]
+    }
+  </script>
 </head>
 
 <body class="bg-[#050505]">
