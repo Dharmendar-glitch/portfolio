@@ -1,6 +1,34 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Users, LayoutList, HeartHandshake } from 'lucide-react';
+import Stack from '../component/Stack';
+
+const communityImages = [
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516512/Picsart_25-01-22_22-18-32-386.jpg_fcz00k.jpg",
+    alt: "Community Event 1",
+  },
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516515/Picsart_24-08-12_12-01-43-488.jpg_pc4q3r.jpg",
+    alt: "Community Event 2",
+  },
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516509/IMG_20241018_104440.jpg_hrx28p.jpg",
+    alt: "Community Event 3",
+  },
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516518/Picsart_25-02-17_23-05-46-706.jpg_xp724g.jpg",
+    alt: "Community Event 4",
+  },
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516512/IMG_20240325_212346.jpg_rkbbsn.jpg",
+    alt: "Community Event 5",
+  },
+  {
+    src: "https://res.cloudinary.com/dlmk17r9h/image/upload/v1773516516/IMG_1556.JPG_znnsaw.jpg",
+    alt: "Community Event 6",
+  },
+];
 
 const CommunitySection = () => {
   return (
@@ -67,15 +95,29 @@ const CommunitySection = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="w-full lg:w-1/2 relative hidden md:block"
+            className="w-full lg:w-1/2 relative hidden md:flex items-center justify-center p-8"
           >
-            <div className="w-full h-full aspect-[4/3] rounded-3xl overflow-hidden glass border border-white/10">
-              <img 
-                src="https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?q=80&w=2070&auto=format&fit=crop" 
-                alt="Community work" 
-                className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-[1s]"
+            <div className="w-[350px] h-[450px] relative z-20">
+              <Stack
+                randomRotation={true}
+                sensitivity={180}
+                sendToBackOnClick={true}
+                autoplay={true}
+                autoplayDelay={2500}
+                pauseOnHover={true}
+                cards={communityImages.map(({ src, alt }) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={alt}
+                    className="w-full h-full object-cover pointer-events-none"
+                  />
+                ))}
               />
             </div>
+            
+            {/* Decorative backglow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-accent/20 rounded-full blur-[80px] pointer-events-none z-0"></div>
           </motion.div>
           
         </div>

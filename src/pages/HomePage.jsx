@@ -1,5 +1,6 @@
 import React from 'react';
 import HeroSection from '../sections/HeroSection';
+import WhatWeDoSection from '../sections/WhatWeDoSection';
 import AboutSection from '../sections/AboutSection';
 import SkillsSection from '../sections/SkillsSection';
 import PortfolioSection from '../sections/PortfolioSection';
@@ -15,6 +16,8 @@ const HomePage = () => {
       
       {/* Decorative line divider */}
       <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
+      
+      <WhatWeDoSection />
       
       <AboutSection />
       

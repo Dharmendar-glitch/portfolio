@@ -1,15 +1,40 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, Instagram, Linkedin, Youtube, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Instagram, Linkedin, Youtube, AlertCircle, CheckCircle2, MessageCircle } from 'lucide-react';
 
 const ContactSection = () => {
   const [formStatus, setFormStatus] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setFormStatus('success');
-    setTimeout(() => setFormStatus(null), 3000);
-    e.target.reset();
+    setFormStatus('loading');
+    
+    const formData = new FormData(e.target);
+
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: json
+      }).then((res) => res.json());
+
+      if (res.success) {
+        setFormStatus('success');
+        e.target.reset();
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      setFormStatus('error');
+    }
+    
+    setTimeout(() => setFormStatus(null), 5000);
   };
 
   return (
@@ -53,13 +78,13 @@ const ContactSection = () => {
                 </div>
               </a>
 
-              <a href="tel:09597770761" className="flex items-center gap-6 group hover-target w-fit">
+              <a href="tel:+91959770761" className="flex items-center gap-6 group hover-target w-fit">
                 <div className="w-16 h-16 rounded-full glass border border-white/10 flex items-center justify-center text-primary group-hover:scale-110 group-hover:bg-primary/20 transition-all duration-300">
                   <Phone size={24} />
                 </div>
                 <div>
                   <h4 className="text-textMain/50 text-sm uppercase tracking-widest mb-1">Phone</h4>
-                  <p className="text-xl font-heading font-semibold text-white group-hover:text-primary transition-colors">09597770761</p>
+                  <p className="text-xl font-heading font-semibold text-white group-hover:text-primary transition-colors">+91 95977 70761</p>
                 </div>
               </a>
 
@@ -78,9 +103,30 @@ const ContactSection = () => {
               <h4 className="text-textMain/50 text-sm uppercase tracking-widest mb-6">Social Networks</h4>
               <div className="flex gap-4">
                 {[
-                  { icon: <Instagram />, label: "Instagram", color: "hover:text-pink-500", link: "#" },
-                  { icon: <Linkedin />, label: "LinkedIn", color: "hover:text-blue-500", link: "#" },
-                  { icon: <Youtube />, label: "YouTube", color: "hover:text-red-500", link: "#" }
+                  { 
+                    icon: <Instagram />, 
+                    label: "Instagram", 
+                    color: "hover:text-pink-500", 
+                    link: "https://www.instagram.com/mr_shaheeth__editzz?igsh=MWlpOW1pMHM4aW1qNw==" 
+                  },
+                  { 
+                    icon: <Linkedin />, 
+                    label: "LinkedIn", 
+                    color: "hover:text-blue-500", 
+                    link: "https://www.linkedin.com/in/s-shaheeth-bb8570283?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
+                  },
+                  { 
+                    icon: <Youtube />, 
+                    label: "YouTube", 
+                    color: "hover:text-red-500", 
+                    link: "https://youtube.com/@mr_shaheeth__editzz684?si=XkCWK76yycAQb150" 
+                  },
+                  { 
+                    icon: <MessageCircle />, 
+                    label: "WhatsApp", 
+                    color: "hover:text-green-500", 
+                    link: "https://wa.me/91959770761" 
+                  }
                 ].map((social, idx) => (
                   <a 
                     key={idx} 
@@ -106,12 +152,20 @@ const ContactSection = () => {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
               
               <div className="space-y-6 relative z-10">
+                {/* Web3Forms Access Key */}
+                <input type="hidden" name="access_key" value="cd7dfc64-4c71-421f-b521-ccf28cbca0d3" />
+                
+                {/* Honeypot for Bot Protection */}
+                <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                   <div className="space-y-2">
                     <label htmlFor="name" className="text-sm font-medium text-textMain/70 uppercase tracking-wider ml-1">Name</label>
                     <input 
                       type="text" 
                       id="name" 
+                      name="name"
                       required 
                       className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/30 focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all hover-target" 
                       placeholder="John Doe" 
@@ -122,6 +176,7 @@ const ContactSection = () => {
                     <input 
                       type="email" 
                       id="email" 
+                      name="email"
                       required 
                       className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/30 focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all hover-target" 
                       placeholder="john@example.com" 
@@ -133,6 +188,7 @@ const ContactSection = () => {
                   <label htmlFor="message" className="text-sm font-medium text-textMain/70 uppercase tracking-wider ml-1">Message</label>
                   <textarea 
                     id="message" 
+                    name="message"
                     required 
                     rows={5} 
                     className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-white/30 focus:outline-none focus:border-primary/50 focus:bg-white/[0.05] transition-all resize-none hover-target" 
@@ -140,24 +196,36 @@ const ContactSection = () => {
                   />
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="w-full relative group/btn inline-flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white text-background font-bold text-lg hover-target overflow-hidden transition-all duration-300 mt-4"
-                >
-                  <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
-                  <span>Send Message</span>
-                  <Send size={20} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
-                </button>
+                  <button 
+                    type="submit" 
+                    disabled={formStatus === 'loading'}
+                    className={`w-full relative group/btn inline-flex items-center justify-center gap-3 px-8 py-5 rounded-2xl bg-white text-background font-bold text-lg hover-target overflow-hidden transition-all duration-300 mt-4 ${formStatus === 'loading' ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+                    <span>{formStatus === 'loading' ? 'Sending...' : 'Send Message'}</span>
+                    <Send size={20} className={`${formStatus === 'loading' ? 'animate-pulse' : 'group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1'} transition-transform`} />
+                  </button>
 
-                {/* Form Status Message */}
+                {/* Form Status Messages */}
                 {formStatus === 'success' && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                    initial={{ opacity: 0, scale: 0.9 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
                     className="flex items-center gap-2 p-4 mt-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400"
                   >
                     <CheckCircle2 size={20} />
                     <span>Message sent successfully! I'll get back to you soon.</span>
+                  </motion.div>
+                )}
+
+                {formStatus === 'error' && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }} 
+                    animate={{ opacity: 1, scale: 1 }} 
+                    className="flex items-center gap-2 p-4 mt-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400"
+                  >
+                    <AlertCircle size={20} />
+                    <span>Something went wrong. Please try again later.</span>
                   </motion.div>
                 )}
               </div>

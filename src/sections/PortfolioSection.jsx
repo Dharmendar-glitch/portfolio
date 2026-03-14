@@ -1,7 +1,24 @@
 import React, { useState, useRef, useCallback, useEffect, useContext } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, animate, useInView } from 'framer-motion';
 import { Play, X, Pause, Volume2, VolumeX, Maximize2, ArrowRight } from 'lucide-react';
 import { AudioContext } from '../App';
+
+// ─── Simple CountUp Component ────────────────────────────────────────────────
+const CountUp = ({ to, suffix = "", duration = 2 }) => {
+  const count = useMotionValue(0);
+  const rounded = useTransform(count, (latest) => Math.round(latest) + suffix);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(count, to, { duration, ease: "easeOut" });
+      return controls.stop;
+    }
+  }, [inView, to, count, duration]);
+
+  return <motion.span ref={ref}>{rounded}</motion.span>;
+};
 
 // ─── All 9 real videos ───────────────────────────────────────────────────────
 const projects = [
@@ -168,6 +185,13 @@ const VideoCard = ({ project, onOpen, isLarge = false }) => {
     if (cardRef.current) observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, []);
+
+  // ─── Sync Audio with Global Toggle ───
+  useEffect(() => {
+    if (videoRef.current && isHovered) {
+      videoRef.current.muted = globalMuted;
+    }
+  }, [globalMuted, isHovered]);
 
   const handleMouseEnter = useCallback(() => {
     if (window.matchMedia('(hover: hover)').matches) {
@@ -608,15 +632,17 @@ const PortfolioSection = () => {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
           {[
-            { label: 'High-End Edits', value: '500+', color: 'text-white' },
-            { label: 'Major Brands', value: '20+', color: 'text-white' },
-            { label: 'Global Reaches', value: '50M+', color: 'text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent' },
-            { label: 'Platforms Mastered', value: '5+', color: 'text-white' },
+            { label: 'High-End Edits', value: 500, suffix: '+', color: 'text-white' },
+            { label: 'Major Brands', value: 20, suffix: '+', color: 'text-white' },
+            { label: 'Global Reaches', value: 1, suffix: 'M+', color: 'text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent' },
+            { label: 'Platforms Mastered', value: 5, suffix: '+', color: 'text-white' },
           ].map((s, i) => (
             <div key={i}
               className="relative flex flex-col items-center justify-center p-6 lg:p-10 rounded-[1.5rem] bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-white/10 transition-all duration-500 overflow-hidden group">
               <div className="absolute inset-0 bg-gradient-to-t from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <p className={`text-4xl md:text-5xl font-heading font-medium tracking-tight mb-3 ${s.color}`}>{s.value}</p>
+              <p className={`text-4xl md:text-5xl font-heading font-medium tracking-tight mb-3 ${s.color}`}>
+                <CountUp to={s.value} suffix={s.suffix} />
+              </p>
               <p className="text-[10px] md:text-xs text-white/40 uppercase tracking-[0.4em] font-medium text-center">{s.label}</p>
             </div>
           ))}

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 
 const navLinks = [
   { name: 'Home', href: '#home' },
+  { name: 'Services', href: '#services' },
   { name: 'About', href: '#about' },
   { name: 'Skills', href: '#skills' },
   { name: 'Portfolio', href: '#portfolio' },
@@ -48,7 +49,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
         <Link to="/" className="text-2xl font-heading font-bold flex items-center gap-2 hover-target">
           <span className="text-gradient">SS.</span>
-          <span className="text-white hidden sm:block">Shakeeth</span>
+          <span className="text-white hidden sm:block">Shaheeth</span>
         </Link>
 
         {/* Desktop Nav */}

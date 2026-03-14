@@ -18,7 +18,7 @@ const AboutSection = () => {
 
   return (
     <section id="about" className="relative py-32 px-6">
-      
+
       {/* Background elements */}
       <div className="absolute inset-0 bg-background overflow-hidden pointer-events-none z-[-1]">
         <div className="absolute top-1/2 left-0 w-1/3 h-1/2 bg-accent/10 rounded-full blur-[120px] mix-blend-screen mix-blend-color-dodge"></div>
@@ -37,16 +37,15 @@ const AboutSection = () => {
           <motion.div variants={itemVariants} className="w-full lg:w-5/12">
             <div className="relative group w-full max-w-md mx-auto aspect-[4/5] rounded-[2rem] overflow-hidden glass p-4 border border-white/10 hover-target transition-all duration-500 hover:border-primary/50">
               <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent z-10 mix-blend-multiply transition-opacity group-hover:opacity-50 duration-500"></div>
-              
-              {/* Replace with actual high-quality portrait */}
-              <img 
-                src="https://images.unsplash.com/photo-1533750349088-cd871a92f312?q=80&w=2070&auto=format&fit=crop" 
-                alt="S. Shakeeth" 
+
+              <img
+                src="https://res.cloudinary.com/dlmk17r9h/image/upload/v1773511547/file_00000000caec7208a8357aa9c52ebbe2_hzpuvr.png"
+                alt="S. Shaheeth"
                 className="w-full h-full object-cover rounded-[1.5rem] filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-100 group-hover:scale-105"
               />
-              
+
               <div className="absolute bottom-8 left-8 right-8 z-20 transition-transform duration-500 group-hover:-translate-y-2">
-                <h3 className="text-3xl font-heading font-bold mb-2">S. Shakeeth</h3>
+                <h3 className="text-3xl font-heading font-bold mb-2">S. Shaheeth</h3>
                 <div className="flex items-center gap-2 text-textMain/80 font-medium tracking-wide text-sm opacity-80 group-hover:opacity-100 transition-opacity">
                   <MapPin size={16} className="text-primary" />
                   <span>Coimbatore, India</span>
@@ -60,13 +59,13 @@ const AboutSection = () => {
 
           {/* Right Column: Bio & Stats */}
           <motion.div variants={itemVariants} className="w-full lg:w-7/12">
-            
+
             <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full glass border-white/5 bg-white/5">
               <span className="text-xs uppercase tracking-widest text-primary font-bold">About Me</span>
             </div>
 
             <h2 className="text-4xl lg:text-5xl font-heading font-bold mb-8 leading-tight">
-              Bridging <span className="text-gradient">Business Strategy</span> <br/>
+              Bridging <span className="text-gradient">Business Strategy</span> <br />
               with Creative Storytelling.
             </h2>
 

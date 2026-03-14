@@ -99,24 +99,15 @@ const HeroSection = () => {
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto">
-          {/* View Portfolio (Primary) */}
-          <a
-            href="#portfolio"
-            className="hero-btn group relative w-full sm:w-auto flex items-center justify-center gap-4 px-10 py-5 rounded-full text-xl font-bold text-background bg-white shadow-[0_20px_50px_rgba(255,255,255,0.15)] hover:shadow-[0_25px_60px_rgba(255,255,255,0.25)] transition-all duration-500 overflow-hidden hover:scale-105 active:scale-95"
-          >
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-            <Play size={20} className="fill-background shrink-0" />
-            <span className="relative">View Portfolio</span>
-          </a>
-
-          {/* Hire Me (Secondary) */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full">
+          {/* Contact (Primary CTA) */}
           <a
             href="#contact"
-            className="hero-btn group w-full sm:w-auto flex items-center justify-center gap-4 px-10 py-5 rounded-full text-xl font-semibold text-white border border-white/10 bg-white/[0.03] backdrop-blur-xl hover:border-primary/50 hover:bg-primary/10 transition-all duration-500 hover:scale-105 active:scale-95 shadow-xl"
+            className="hero-btn group relative w-full sm:w-auto flex items-center justify-center gap-4 px-12 py-5 rounded-full text-xl font-bold text-background bg-white shadow-[0_20px_50px_rgba(255,255,255,0.15)] hover:shadow-[0_25px_60px_rgba(255,255,255,0.25)] transition-all duration-500 overflow-hidden hover:scale-105 active:scale-95"
           >
-            <span>Hire Me</span>
-            <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-500" />
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+            <span className="relative">Work With Me</span>
+            <ArrowRight size={20} className="relative group-hover:translate-x-2 transition-transform duration-500" />
           </a>
         </div>
 

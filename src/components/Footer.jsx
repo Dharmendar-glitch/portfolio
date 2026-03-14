@@ -20,7 +20,10 @@ const Footer = () => {
               <span className="text-white">Studio</span>
             </h3>
             <p className="text-textMain/50 text-sm mt-2">
-              © 2026 S. Shakeeth – Creative Video Editor
+              © 2026 S. Shaheeth – Creative Video Editor
+            </p>
+            <p className="text-white/20 text-[10px] mt-2 uppercase tracking-[0.3em] font-medium">
+              Developed by <a href="https://bharanidharan.dev" target="_blank" rel="noopener noreferrer" className="text-primary/60 hover:text-primary transition-colors hover-target">bharanidharan.dev</a>
             </p>
           </motion.div>
 
