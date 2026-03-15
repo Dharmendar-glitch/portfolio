@@ -270,6 +270,7 @@ const VideoCard = ({ project, onOpen }) => {
         ref={videoRef}
         poster={thumbnailUrl}
         preload="none"
+        muted
         playsInline
         loop
         className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1s] ease-out will-change-transform
@@ -335,6 +336,20 @@ const VideoModal = ({ project, onClose }) => {
   const { isMuted: globalMuted } = useContext(AudioContext);
   const [muted, setMuted] = useState(false); // Default to unmuted for immersive viewing
   const [playing, setPlaying] = useState(true);
+
+  // ─── Force Autoplay Fallback ───
+  useEffect(() => {
+    if (videoRef.current) {
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.log("Autoplay with audio blocked, falling back to muted autoplay.");
+          setMuted(true);
+          videoRef.current.play().catch(e => console.error("Video play failed:", e));
+        });
+      }
+    }
+  }, []);
   const col = categoryColors[project.category] || categoryColors.Ads;
 
   const [progress, setProgress] = useState(0);
