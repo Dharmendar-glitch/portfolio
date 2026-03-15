@@ -27,7 +27,7 @@ const projects = [
     title: "Singer Krish in CBE",
     category: "Reels",
     platform: "YouTube Shorts",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488733/day_in_cbe_krishh_11_sdoelc.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572898/day_in_cbe_krishh_11_web_web_e4z5gg.mp4",
     size: "normal",
   },
   {
@@ -35,7 +35,7 @@ const projects = [
     title: "DK Gold – Brand Ad Vol.1",
     category: "Ads",
     platform: "Instagram / YouTube",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488642/DK_GOLD_VD_sorhbn.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572851/DK_GOLD_VD_web_web_l0mqlk.mp4",
     size: "normal",
   },
   {
@@ -43,7 +43,7 @@ const projects = [
     title: "IHS Voice Promo",
     category: "Social Media",
     platform: "YouTube Shorts",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488696/IHS_voice_1_giea5l.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572874/IHS_voice_1__web_web_ip3gqs.mp4",
     size: "normal",
   },
   {
@@ -51,7 +51,7 @@ const projects = [
     title: "DK Gold – Brand Ad Vol.2",
     category: "Ads",
     platform: "Instagram / YouTube",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488697/DK_GOLD_2_VD_ahy2a1.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773573418/DK_GOLD_2_VD_web_web_vw2w9j.mp4",
     size: "normal",
   },
   {
@@ -59,7 +59,7 @@ const projects = [
     title: "YEF Madurai",
     category: "Events",
     platform: "YouTube",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488704/YEF_Madurai_final_grkga5.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572902/YEF_Madurai_final_web_web_d1te8z.mp4",
     size: "normal",
   },
   {
@@ -67,7 +67,7 @@ const projects = [
     title: "PSNA Badminton Reel",
     category: "Reels",
     platform: "Instagram Reels",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488710/PSNA_BADMINTON_01_i8pxuw.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572876/PSNA_BADMINTON_01_web_web_mkfnni.mp4",
     size: "normal",
   },
   {
@@ -75,7 +75,7 @@ const projects = [
     title: "Holi Festival Celebration",
     category: "Events",
     platform: "Instagram Reels",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488618/holi_final_19_dmhzw3.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572873/holi_final_19_web_web_tdkphs.mp4",
     size: "normal",
   },
   {
@@ -83,7 +83,7 @@ const projects = [
     title: "DJ Deepika – Artist Intro",
     category: "Social Media",
     platform: "Instagram Reels",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488740/DJ_DEEPIKA_INTRO_fvexfx.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572903/DJ_DEEPIKA_INTRO_web_web_web_web_zsmbz9.mp4",
     size: "normal",
   },
   {
@@ -91,7 +91,7 @@ const projects = [
     title: "Shree Samparpan – Brand Film",
     category: "Ads",
     platform: "YouTube",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773489709/redpandacompress_SHREE_SAMPARPAN_HD_MP4_tidsb9.mp4",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773572900/SHREE_SAMPARPAN_HD_MP4_web_web_ydb1mg.mp4",
     size: "normal",
   },
   {
@@ -161,28 +161,52 @@ const VideoCard = ({ project, onOpen }) => {
 
   // ─── Intersection Observer: lazy-load video src ONLY when card is visible ───
   useEffect(() => {
+    let playTimeout;
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    
+    // Mobile needs tight thresholds to only play 1-2 centered videos. Desktop needs large margins to preload early.
+    const observerOptions = isMobile 
+      ? { threshold: [0, 0.25, 0.5, 0.75], rootMargin: '-15% 0px -15% 0px' }
+      : { threshold: [0, 0.1], rootMargin: '400px' };
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting && videoRef.current && !videoRef.current.src) {
-          // Inject src only when in viewport — prevents 12 parallel network requests
-          videoRef.current.src = project.url;
-          setVideoLoaded(true);
-        }
-        // Mobile auto-play when >50% visible (Reliable touch detection)
-        if (window.matchMedia('(pointer: coarse)').matches) {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+        if (!isMobile) {
+          // Desktop: preload metadata completely off-screen so plays are instantaneous
+          if (entry.isIntersecting && videoRef.current && !videoRef.current.src) {
+            videoRef.current.src = project.url;
+            videoRef.current.preload = "auto"; // aggressively buffer when nearby
+          }
+        } else {
+          // Mobile auto-play when tightly visible (Avoids mult-video bandwidth choke)
+          if (entry.isIntersecting && entry.intersectionRatio > 0.4) {
             setIsHovered(true);
-            videoRef.current?.play().catch(() => { });
+            // Debounce play on scroll
+            playTimeout = setTimeout(() => {
+              if (videoRef.current) {
+                if (!videoRef.current.src) {
+                  videoRef.current.src = project.url;
+                  videoRef.current.preload = "auto";
+                }
+                videoRef.current.play().catch(() => {});
+              }
+            }, 100);
           } else {
             setIsHovered(false);
-            videoRef.current?.pause();
+            clearTimeout(playTimeout);
+            if (videoRef.current) {
+              videoRef.current.pause();
+            }
           }
         }
       });
-    }, { threshold: [0.1, 0.5], rootMargin: '200px' });
+    }, observerOptions);
 
     if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      clearTimeout(playTimeout);
+    };
   }, [project.url]);
 
   // ─── Sync Audio with Global Toggle ───
@@ -196,7 +220,16 @@ const VideoCard = ({ project, onOpen }) => {
     if (!window.matchMedia('(hover: hover)').matches) return;
     setIsHovered(true);
     if (videoRef.current) {
-      videoRef.current.currentTime = 0;
+      if (!videoRef.current.src) {
+        videoRef.current.src = project.url;
+        videoRef.current.preload = "auto";
+      }
+      
+      // Syncing currentTime to 0 synchronously before it's loaded causes scroll stuttering
+      if (videoRef.current.readyState >= 1) {
+        videoRef.current.currentTime = 0;
+      }
+      
       videoRef.current.muted = globalMuted;
       videoRef.current.play().catch(() => {
         if (videoRef.current) {
@@ -205,7 +238,7 @@ const VideoCard = ({ project, onOpen }) => {
         }
       });
     }
-  }, [globalMuted]);
+  }, [globalMuted, project.url]);
 
   const handleMouseLeave = useCallback(() => {
     if (!window.matchMedia('(hover: hover)').matches) return;
@@ -232,8 +265,8 @@ const VideoCard = ({ project, onOpen }) => {
         ease: [0.16, 1, 0.3, 1],
         layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] }
       }}
-      className={`group relative rounded-[2rem] overflow-hidden cursor-pointer bg-black/40 backdrop-blur-sm border border-white/[0.08]
-        hover:border-white/[0.2] transition-all duration-700
+      className={`group relative rounded-[2rem] overflow-hidden cursor-pointer bg-[#0a0a0a] border border-white/[0.08]
+        hover:border-white/[0.2] transition-all duration-500
         shadow-[0_8px_30px_rgb(0,0,0,0.5)]`}
       style={{ aspectRatio: '9/16' }}
       onMouseEnter={handleMouseEnter}
@@ -260,22 +293,21 @@ const VideoCard = ({ project, onOpen }) => {
         decoding="async"
         width="400"
         onLoad={() => setImageLoaded(true)}
-        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1s] ease-out will-change-transform
+        className={`absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-700 ease-out
           ${imageLoaded ? 'opacity-100' : 'opacity-0'}
-          ${isHovered ? 'scale-[1.05] blur-[10px] opacity-0' : 'scale-100 blur-0'}`}
+          ${isHovered ? 'scale-[1.05] opacity-0' : 'scale-100 opacity-100'}`}
       />
 
       {/* ── Video: NO src attribute — injected lazily by IntersectionObserver ── */}
       <video
         ref={videoRef}
         poster={thumbnailUrl}
-        autoPlay
-        preload="auto"
+        preload="metadata"
         muted
         playsInline
         loop
-        className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1s] ease-out will-change-transform
-          ${isHovered ? 'scale-[1.03] blur-0 opacity-100 brightness-75' : 'scale-100 blur-[2px] opacity-0 brightness-90'}`}
+        className={`absolute inset-0 w-full h-full object-cover pointer-events-none transition-[opacity,transform] duration-500 ease-out
+          ${isHovered ? 'scale-[1.03] opacity-100' : 'scale-100 opacity-0'}`}
       />
 
       {/* ── Refined Scrims ── */}
@@ -512,13 +544,17 @@ const PortfolioSection = () => {
 
   // ─── Detect Mobile for Initial Limit ───
   useEffect(() => {
+    let lastWidth = window.innerWidth;
     const checkMobile = () => {
-      const mobile = window.matchMedia('(max-width: 768px)').matches;
+      if (window.innerWidth === lastWidth) return;
+      lastWidth = window.innerWidth;
+      const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
-      // Initialize with 5 on mobile, 100 (all) on desktop
       setItemsToShow(mobile ? 5 : 100);
     };
-    checkMobile();
+    const initMobile = window.innerWidth <= 768;
+    setIsMobile(initMobile);
+    setItemsToShow(initMobile ? 5 : 100);
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
