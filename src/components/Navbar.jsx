@@ -30,8 +30,12 @@ const Navbar = () => {
     setMobileMenuOpen(false);
     const target = document.querySelector(targetId);
     if (target) {
+      const headerOffset = 80;
+      const elementPosition = target.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
       window.scrollTo({
-        top: target.offsetTop - 80,
+        top: offsetPosition,
         behavior: 'smooth',
       });
     }
@@ -83,28 +87,64 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden glass border-t border-white/10 mt-4 mx-4 rounded-2xl overflow-hidden backdrop-blur-xl"
-          >
-            <div className="flex flex-col py-4 px-6 space-y-4">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  onClick={(e) => scrollToSection(e, link.href)}
-                  className="text-white/80 hover:text-white transition-colors py-2 text-lg border-b border-white/5"
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[51] md:hidden"
+            />
+            
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-background/95 backdrop-blur-2xl border-l border-white/10 z-[52] md:hidden flex flex-col p-8 shadow-2xl"
+            >
+              <div className="flex justify-between items-center mb-12">
+                <span className="text-xl font-bold text-gradient">Menu</span>
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 text-white/70 hover:text-white"
                 >
-                  {link.name}
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="flex flex-col space-y-6">
+                {navLinks.map((link, i) => (
+                  <motion.a
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => scrollToSection(e, link.href)}
+                    className="text-2xl font-medium text-white/80 hover:text-white transition-colors"
+                  >
+                    {link.name}
+                  </motion.a>
+                ))}
+              </div>
+
+              <div className="mt-auto">
+                <a 
+                  href="#contact" 
+                  onClick={(e) => scrollToSection(e, '#contact')}
+                  className="block w-full text-center px-6 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-lg shadow-primary/20"
+                >
+                  Hire Me
                 </a>
-              ))}
-            </div>
-          </motion.div>
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </motion.nav>

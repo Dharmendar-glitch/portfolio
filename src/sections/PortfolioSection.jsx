@@ -24,11 +24,11 @@ const CountUp = ({ to, suffix = "", duration = 2 }) => {
 const projects = [
   {
     id: 1,
-    title: "Holi Festival Celebration",
-    category: "Events",
-    platform: "Instagram Reels",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488618/holi_final_19_dmhzw3.mp4",
-    size: "large", // takes 2 rows
+    title: "Singer Krish in CBE",
+    category: "Reels",
+    platform: "YouTube Shorts",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488733/day_in_cbe_krishh_11_sdoelc.mp4",
+    size: "normal",
   },
   {
     id: 2,
@@ -56,11 +56,11 @@ const projects = [
   },
   {
     id: 5,
-    title: "YEF Madurai Event Film",
+    title: "YEF Madurai",
     category: "Events",
     platform: "YouTube",
     url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488704/YEF_Madurai_final_grkga5.mp4",
-    size: "large",
+    size: "normal",
   },
   {
     id: 6,
@@ -72,10 +72,10 @@ const projects = [
   },
   {
     id: 7,
-    title: "A Day in CBE – City Reel",
-    category: "Reels",
-    platform: "YouTube Shorts",
-    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488733/day_in_cbe_krishh_11_sdoelc.mp4",
+    title: "Holi Festival Celebration",
+    category: "Events",
+    platform: "Instagram Reels",
+    url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773488618/holi_final_19_dmhzw3.mp4",
     size: "normal",
   },
   {
@@ -92,7 +92,7 @@ const projects = [
     category: "Ads",
     platform: "YouTube",
     url: "https://res.cloudinary.com/dlmk17r9h/video/upload/v1773489709/redpandacompress_SHREE_SAMPARPAN_HD_MP4_tidsb9.mp4",
-    size: "large",
+    size: "normal",
   },
   {
     id: 10,
@@ -172,7 +172,7 @@ const VideoCard = ({ project, onOpen }) => {
         if (window.matchMedia('(hover: none)').matches) {
           if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
             setIsHovered(true);
-            videoRef.current?.play().catch(() => {});
+            videoRef.current?.play().catch(() => { });
           } else {
             setIsHovered(false);
             videoRef.current?.pause();
@@ -201,7 +201,7 @@ const VideoCard = ({ project, onOpen }) => {
       videoRef.current.play().catch(() => {
         if (videoRef.current) {
           videoRef.current.muted = true;
-          videoRef.current.play().catch(() => {});
+          videoRef.current.play().catch(() => { });
         }
       });
     }
@@ -270,7 +270,6 @@ const VideoCard = ({ project, onOpen }) => {
         ref={videoRef}
         poster={thumbnailUrl}
         preload="none"
-        muted
         playsInline
         loop
         className={`absolute inset-0 w-full h-full object-cover transition-all duration-[1s] ease-out will-change-transform
@@ -316,26 +315,7 @@ const VideoCard = ({ project, onOpen }) => {
         </span>
       </div>
 
-      {/* ── Floating Play Ring ── */}
-      <AnimatePresence>
-        {isHovered && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
-          >
-            <div className="relative flex items-center justify-center">
-              <div className="absolute w-20 h-20 rounded-full border border-white/20 animate-[spin_4s_linear_infinite]" />
-              <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-xl border border-white/40
-                flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.15)] group-hover:scale-110 transition-transform duration-500">
-                <Play size={22} className="text-white translate-x-[2px]" fill="white" />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Floating Play Ring removed for cleaner hover experience */}
 
       {/* ── Info bar ── */}
       <div className={`absolute bottom-0 left-0 right-0 z-20 p-5 flex flex-col justify-end transition-all duration-700 pointer-events-none
@@ -353,9 +333,13 @@ const VideoCard = ({ project, onOpen }) => {
 const VideoModal = ({ project, onClose }) => {
   const videoRef = useRef(null);
   const { isMuted: globalMuted } = useContext(AudioContext);
-  const [muted, setMuted] = useState(globalMuted);
+  const [muted, setMuted] = useState(false); // Default to unmuted for immersive viewing
   const [playing, setPlaying] = useState(true);
   const col = categoryColors[project.category] || categoryColors.Ads;
+
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -380,6 +364,27 @@ const VideoModal = ({ project, onClose }) => {
     setMuted(!muted);
   };
 
+  const handleTimeUpdate = () => {
+    if (!videoRef.current) return;
+    const current = videoRef.current.currentTime;
+    const dur = videoRef.current.duration;
+    setCurrentTime(current);
+    setProgress((current / dur) * 100);
+  };
+
+  const handleSeek = (e) => {
+    if (!videoRef.current) return;
+    const seekTime = (e.target.value / 100) * videoRef.current.duration;
+    videoRef.current.currentTime = seekTime;
+    setProgress(e.target.value);
+  };
+
+  const formatTime = (time) => {
+    const mins = Math.floor(time / 60);
+    const secs = Math.floor(time % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -393,7 +398,7 @@ const VideoModal = ({ project, onClose }) => {
       <div className="absolute inset-0 bg-gradient-radial opacity-30 pointer-events-none"
         style={{ background: `radial-gradient(circle at 50% 50%, ${col?.glow || 'rgba(124,58,237,0.3)'}, transparent 70%)` }}
       />
-      
+
       {/* ── Floating Close Button ── */}
       <button onClick={onClose}
         className="absolute top-6 right-6 md:top-10 md:right-10 z-[9001] w-12 h-12 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 hover:scale-110 transition-all duration-500 shadow-[0_4px_20px_rgba(0,0,0,0.5)] group"
@@ -410,8 +415,8 @@ const VideoModal = ({ project, onClose }) => {
         className="relative flex flex-col items-center justify-center w-full h-full max-h-[100dvh] md:p-12 xl:p-16"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative w-full h-full md:h-auto md:max-w-5xl md:aspect-video md:rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(0,0,0,0.9)] md:border md:border-white/10 group cursor-pointer md:ring-1 md:ring-white/20" onClick={togglePlay}>
-          
+        <div className="relative w-full h-full md:h-auto md:max-w-5xl md:aspect-video md:rounded-3xl overflow-hidden shadow-[0_0_150px_rgba(0,0,0,0.9)] md:border md:border-white/10 group md:ring-1 md:ring-white/20">
+
           <video
             ref={videoRef}
             src={project.url}
@@ -421,51 +426,51 @@ const VideoModal = ({ project, onClose }) => {
             muted={muted}
             loop
             className="w-full h-full object-contain md:bg-black"
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={() => setDuration(videoRef.current.duration)}
           />
 
-          {/* ── Pause Overlay Icon ── */}
-          <AnimatePresence>
-            {!playing && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0 flex items-center justify-center bg-black/30 pointer-events-none"
-              >
-                <div className="w-24 h-24 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.2)]">
-                  <Play size={36} className="text-white translate-x-[2px]" fill="white" />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* ── Seek Bar ── */}
+          <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/10 group-hover:h-2 transition-all cursor-pointer z-30">
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={progress}
+              onChange={handleSeek}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-40"
+            />
+            <div
+              className={`absolute top-0 left-0 h-full bg-gradient-to-r ${col?.bg} shadow-[0_0_10px_rgba(124,58,237,0.5)] transition-all duration-100`}
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          {/* Pause overlay removed as per request for autoplay experience */}
 
           {/* ── Dynamic Island Style Control Bar ── */}
-          <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4 px-3 py-3 rounded-full bg-black/60 backdrop-blur-2xl border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out translate-y-4 group-hover:translate-y-0">
-            
-            <button onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              className="w-12 h-12 rounded-full bg-white/10 border border-transparent hover:border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 transition-all outline-none"
-            >
-              {playing ? <Pause size={18} fill="white" /> : <Play size={18} fill="white" className="translate-x-px" />}
-            </button>
-            
-            <div className="w-px h-8 bg-white/10" />
-            
+          <div className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-3 rounded-full bg-black/60 backdrop-blur-2xl border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-0 group-hover:opacity-100 transition-all duration-700 ease-out translate-y-4 group-hover:translate-y-0 z-20">
+
+            {/* Play/Pause control removed for non-stop autoplay experience */}
+
             <button onClick={(e) => { e.stopPropagation(); toggleMute(); }}
-              className="w-12 h-12 rounded-full bg-white/10 border border-transparent hover:border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 transition-all outline-none"
+              className="w-10 h-10 rounded-full bg-white/10 border border-transparent hover:border-white/20 flex items-center justify-center text-white hover:bg-white/20 hover:scale-105 transition-all outline-none"
             >
-              {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
-            
-            <div className="w-px h-8 bg-white/10" />
-            
-            <div className="flex flex-col pr-4 pl-2 justify-center">
-              <span className={`text-[9px] font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${col?.bg}`}>
-                {project.category}
-              </span>
-              <span className="text-sm font-medium text-white truncate max-w-[120px] md:max-w-[200px] leading-tight">
+
+            <div className="w-px h-6 bg-white/10" />
+
+            <div className="flex flex-col pr-2 justify-center min-w-[100px]">
+              <div className="flex justify-between items-center mb-0.5">
+                <span className={`text-[8px] font-bold uppercase tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r ${col?.bg}`}>
+                  {project.category}
+                </span>
+                <span className="text-[9px] font-mono text-white/50">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </span>
+              </div>
+              <span className="text-xs font-medium text-white truncate max-w-[120px] md:max-w-[200px] leading-tight">
                 {project.title}
               </span>
             </div>
@@ -488,13 +493,19 @@ const PortfolioSection = () => {
     const checkMobile = () => {
       const mobile = window.matchMedia('(max-width: 768px)').matches;
       setIsMobile(mobile);
-      if (mobile) setItemsToShow(5);
-      else setItemsToShow(12);
+      // Initialize with 5 on mobile, 100 (all) on desktop
+      setItemsToShow(mobile ? 5 : 100);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Reset itemsToShow when filter changes to show only the first few of the new category
+  useEffect(() => {
+    if (isMobile) setItemsToShow(5);
+    else setItemsToShow(100);
+  }, [filter, isMobile]);
 
   const filtered = filter === 'All' ? projects : projects.filter(p => p.category === filter);
   const displayedProjects = filtered.slice(0, itemsToShow);
@@ -568,67 +579,48 @@ const PortfolioSection = () => {
           })}
         </motion.div>
 
-        {/* ── Flawless CSS Grid (No Masonry Alignment Bugs) ── */}
-        {/* ── Flawless CSS Grid with Stagger Reveal ── */}
-        <motion.div
-           layout
-           initial="hidden"
-           whileInView="show"
-           viewport={{ once: true, margin: "-50px" }}
-           variants={{
-             hidden: { opacity: 0 },
-             show: {
-               opacity: 1,
-               transition: {
-                 staggerChildren: 0.1,
-                 delayChildren: 0.2
-               }
-             }
-           }}
-           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
-         >
-           <AnimatePresence mode="popLayout">
-             {displayedProjects.map((project) => (
-               <motion.div
-                 key={project.id}
-                 variants={{
-                   hidden: { opacity: 0, y: 30, scale: 0.95 },
-                   show: { 
-                     opacity: 1, 
-                     y: 0, 
-                     scale: 1,
-                     transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
-                   }
-                 }}
-               >
-                 <VideoCard
-                   project={project}
-                   onOpen={setActiveVideo}
-                   isLarge={project.size === 'large'}
-                 />
-               </motion.div>
-             ))}
-           </AnimatePresence>
-         </motion.div>
+        {/* ── Flawless CSS Grid ── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 relative z-10">
+          <AnimatePresence mode="popLayout">
+            {displayedProjects.map((project) => (
+              <motion.div
+                key={project.id}
+                layout
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full"
+              >
+                <VideoCard
+                  project={project}
+                  onOpen={setActiveVideo}
+                  isLarge={project.size === 'large'}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
 
-         {/* ── View More Button (Mobile Only) ── */}
-         {hasMore && isMobile && (
-           <motion.div
-             initial={{ opacity: 0, y: 20 }}
-             animate={{ opacity: 1, y: 0 }}
-             className="mt-12 flex justify-center"
-           >
-             <button
-               onClick={() => setItemsToShow(filtered.length)}
-               className="group relative px-10 py-4 rounded-full bg-white/[0.05] border border-white/10 backdrop-blur-xl text-white font-bold tracking-widest uppercase text-xs hover:bg-white/[0.1] hover:border-white/20 transition-all duration-500 shadow-2xl overflow-hidden"
-             >
-               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-               View All {filtered.length} Works
-             </button>
-           </motion.div>
-         )}
 
-         {/* ── Ultra Premium Stats Bar ── */}
+        {/* ── View More Button ── */}
+        {hasMore && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-12 flex justify-center"
+          >
+            <button
+              onClick={() => setItemsToShow(filtered.length)}
+              className="group relative px-10 py-4 rounded-full bg-white/[0.05] border border-white/10 backdrop-blur-xl text-white font-bold tracking-widest uppercase text-xs hover:bg-white/[0.1] hover:border-white/20 transition-all duration-500 shadow-2xl overflow-hidden"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              View All {filtered.length} Works
+            </button>
+          </motion.div>
+        )}
+
+        {/* ── Ultra Premium Stats Bar ── */}
         <motion.div
           className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 lg:p-6 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_20px_80px_rgba(0,0,0,0.8)]"
           initial={{ opacity: 0, y: 40 }}

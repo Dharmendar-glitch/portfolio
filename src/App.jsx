@@ -66,45 +66,12 @@ const AnimatedRoutes = () => {
   );
 };
 
-import { Volume2, VolumeX } from 'lucide-react';
-
 // Create a simple Global Audio Context
 export const AudioContext = React.createContext();
 
-const SoundToggle = () => {
-  const { isMuted, setIsMuted } = React.useContext(AudioContext);
-  
-  return (
-    <motion.button
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      onClick={() => setIsMuted(prev => !prev)}
-      className="fixed bottom-8 right-8 z-[10000] flex items-center justify-center w-14 h-14 rounded-full bg-white/10 backdrop-blur-2xl border border-white/20 shadow-2xl transition-colors hover:bg-white/20 group"
-      title={isMuted ? "Unmute Portfolio" : "Mute Portfolio"}
-    >
-      <div className="relative">
-        {isMuted ? (
-          <VolumeX size={20} className="text-white/40 group-hover:text-white transition-colors" />
-        ) : (
-          <div className="relative flex items-center justify-center">
-            <Volume2 size={20} className="text-primary group-hover:text-white transition-colors animate-pulse" />
-            <span className="absolute -inset-2 rounded-full border border-primary/30 animate-ping opacity-60" />
-          </div>
-        )}
-      </div>
-    </motion.button>
-  );
-};
-
 function App() {
   const [loading, setLoading] = useState(true);
-  const [isMuted, setIsMuted] = useState(() => {
-    // Check localStorage for preference, default to muted for UX best practices
-    const saved = localStorage.getItem('site-muted');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
+  const [isMuted, setIsMuted] = useState(false); // Force unmuted by default since toggle is gone
 
   useEffect(() => {
     localStorage.setItem('site-muted', JSON.stringify(isMuted));
@@ -113,9 +80,7 @@ function App() {
   return (
     <AudioContext.Provider value={{ isMuted, setIsMuted }}>
       <Router>
-        <CustomCursor />
         <ScrollProgressBar />
-        {!loading && <SoundToggle />}
         
         <AnimatePresence>
           {loading ? (

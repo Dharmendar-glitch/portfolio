@@ -23,7 +23,7 @@ const Footer = () => {
               © 2026 S. Shaheeth – Creative Video Editor
             </p>
             <p className="text-white/20 text-[10px] mt-2 uppercase tracking-[0.3em] font-medium">
-              Developed by <a href="https://bharanidharan.dev" target="_blank" rel="noopener noreferrer" className="text-primary/60 hover:text-primary transition-colors hover-target">bharanidharan.dev</a>
+              developed by <a href="mailto:brnpro333@gmail.com" className="text-primary/60 hover:text-primary transition-colors hover-target">brnpro</a>
             </p>
           </motion.div>
 
