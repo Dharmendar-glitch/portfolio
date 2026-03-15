@@ -168,8 +168,8 @@ const VideoCard = ({ project, onOpen }) => {
           videoRef.current.src = project.url;
           setVideoLoaded(true);
         }
-        // Mobile auto-play when >50% visible
-        if (window.matchMedia('(hover: none)').matches) {
+        // Mobile auto-play when >50% visible (Reliable touch detection)
+        if (window.matchMedia('(pointer: coarse)').matches) {
           if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
             setIsHovered(true);
             videoRef.current?.play().catch(() => { });
@@ -269,7 +269,8 @@ const VideoCard = ({ project, onOpen }) => {
       <video
         ref={videoRef}
         poster={thumbnailUrl}
-        preload="none"
+        autoPlay
+        preload="auto"
         muted
         playsInline
         loop
@@ -339,17 +340,23 @@ const VideoModal = ({ project, onClose }) => {
 
   // ─── Force Autoplay Fallback ───
   useEffect(() => {
-    if (videoRef.current) {
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(error => {
-          console.log("Autoplay with audio blocked, falling back to muted autoplay.");
-          setMuted(true);
-          videoRef.current.play().catch(e => console.error("Video play failed:", e));
-        });
+    const playVideo = () => {
+      if (videoRef.current) {
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("Autoplay blocked, retrying muted...");
+            setMuted(true);
+            videoRef.current.play().catch(e => console.error("Final play attempt failed:", e));
+          });
+        }
       }
-    }
-  }, []);
+    };
+
+    // Small timeout to ensure video source is ready
+    const timer = setTimeout(playVideo, 100);
+    return () => clearTimeout(timer);
+  }, [project.url]);
   const col = categoryColors[project.category] || categoryColors.Ads;
 
   const [progress, setProgress] = useState(0);
